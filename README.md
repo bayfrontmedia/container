@@ -31,9 +31,9 @@ composer require bayfrontmedia/container
 ### Start using the container
 
 ```
-namespace Bayfront\Container;
+use Bayfront\Container;
 
-$container = new Container;
+$container = new Container();
 ```
 
 ### Public methods
