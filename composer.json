@@ -1,0 +1,39 @@
+{
+  "name": "bayfrontmedia/container",
+  "description": "An easy to use PSR-11 compatible dependency injection container.",
+  "homepage": "https://github.com/bayfrontmedia/container",
+  "license" : "MIT",
+  "version": "1.0.0",
+  "type": "library",
+  "keywords": [
+    "php",
+    "container",
+    "psr-11",
+    "di",
+    "dependency",
+    "injection"
+  ],
+  "authors": [
+    {
+      "name": "John Robinson",
+      "email": "john@bayfrontmedia.com",
+      "homepage": "https://www.bayfrontmedia.com",
+      "role": "Developer"
+    }
+  ],
+  "funding": [
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/bayfrontmedia"
+    }
+  ],
+  "require": {
+    "php": ">=7.2.0",
+    "psr/container": "^1.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bayfront\\Container\\": "src/"
+    }
+  }
+}
