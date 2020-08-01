@@ -47,6 +47,21 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Returns an array containing all the IDs which currently exist in the container
+     *
+     * @return array
+     */
+
+    public function getContents(): array
+    {
+        $contents = array_keys(self::$instances);
+
+        sort($contents);
+
+        return $contents;
+    }
+
+    /**
      * Checks if the container can return an entry for the given identifier
      *
      * @param string $id

@@ -18,7 +18,7 @@ John Robinson, [Bayfront Media](https://www.bayfrontmedia.com)
 
 ## Requirements
 
-* PHP > 7.2.0
+* PHP >= 7.2.0
 
 ## Installation
 
@@ -39,6 +39,7 @@ $container = new Container;
 ### Public methods
 
 - [get](#get)
+- [getContents](#getcontents)
 - [has](#has)
 - [set](#set)
 - [create](#create)
@@ -74,6 +75,28 @@ try {
 } catch (NotFoundException $e) {
     echo $e->getMessage();
 }
+```
+
+<hr />
+
+### getContents
+
+**Description:**
+
+Returns an array containing all the IDs which currently exist in the container.
+
+**Parameters:**
+
+- None
+
+**Returns:**
+
+- (array)
+
+**Example:**
+
+```
+print_r($container->getContents());
 ```
 
 <hr />
