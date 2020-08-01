@@ -116,7 +116,7 @@ class Container implements ContainerInterface
 
             } catch (NotFoundException $e) {
 
-                throw new ContainerException($class);
+                throw new ContainerException('Error resolving class from container: ' . $class);
 
             }
 
@@ -132,13 +132,13 @@ class Container implements ContainerInterface
 
         } catch (ReflectionException $e) {
 
-            throw new ContainerException($class);
+            throw new ContainerException('Unable to locate class: ' . $class);
 
         }
 
         if (!$reflection->isInstantiable()) {
 
-            throw new ContainerException($class);
+            throw new ContainerException('Unable to instantiate class: ' . $class);
 
         }
 
@@ -220,7 +220,7 @@ class Container implements ContainerInterface
                  * has no default value defined
                  */
 
-                throw new ContainerException($class);
+                throw new ContainerException('Unable to resolve parameter (' . $parameter . ') for class: ' . $class);
 
             }
 
@@ -243,23 +243,25 @@ class Container implements ContainerInterface
 
                 } catch (NotFoundException $e) {
 
-                    throw new ContainerException($dependency->name);
+                    throw new ContainerException('Error resolving dependent class from container: ' . $dependency->name);
 
                 }
 
             }
 
-            $resolved = $this->create($dependency->name); // Returns object
+            try {
 
-            if ($resolved) {
+                $resolved = $this->create($dependency->name); // Returns object
 
-                $return[$parameter->name] = $resolved; // Class instance
+            } catch (ContainerException $e) {
 
-                continue; // Continue to the next parameter
+                throw new ContainerException('Unable to resolve object parameter (' . $parameter . ') for class: ' . $class);
 
             }
 
-            throw new ContainerException($class);
+            $return[$parameter->name] = $resolved; // Class instance
+
+            continue; // Continue to the next parameter
 
         }
 
