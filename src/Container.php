@@ -75,10 +75,33 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Creates a class and saves it into the container identified by $id.
+     * Saves a preexisting class instance into the container identified by $id.
+     *
+     * If another entry exists in the container with the same `$id`, it will be overwritten.
+     *
+     * Saving a class instance to the container using its namespaced name as the `$id` will allow it
+     * to be used by the container whenever another class requires it as a dependency.
+     *
+     * @param string $id
+     * @param object $object
+     *
+     * @return self
+     */
+
+    public function put(string $id, object $object): self
+    {
+        self::$instances[$id] = $object;
+        return $this;
+    }
+
+    /**
+     * Creates a class instance using create() and saves it into the container identified by $id.
      * An instance of the class will be returned.
      *
      * If another entry exists in the container with the same $id, it will be overwritten
+     *
+     * Saving a class instance to the container using its namespaced name as the `$id` will allow it
+     * to be used by the container whenever another class requires it as a dependency.
      *
      * @param string $id
      * @param string $class (Fully namespaced class name)
@@ -99,11 +122,11 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Creates a class object using dependency injection.
+     * Creates a class instance using dependency injection.
      * An instance of the class will be returned, but not saved in the container.
      *
      * If this namespaced class already exists in the container as an $id,
-     * the object existing in the container will be returned by default.
+     * the instance existing in the container will be returned by default.
      *
      * @param string $class (Fully namespaced class name)
      * @param array $params (Named parameters to pass to the class constructor)
@@ -285,7 +308,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Remove class object from the container, if existing
+     * Remove class instance from the container, if existing
      *
      * @param string $id
      *

@@ -41,6 +41,7 @@ $container = new Container();
 - [get](#get)
 - [getContents](#getcontents)
 - [has](#has)
+- [put](#put)
 - [set](#set)
 - [create](#create)
 - [forget](#forget)
@@ -125,15 +126,44 @@ if ($container->has('Dependency')) {
 
 <hr />
 
+### put
+
+**Description:**
+
+Saves a preexisting class instance into the container identified by `$id`.
+
+If another entry exists in the container with the same `$id`, it will be overwritten.
+
+Saving a class instance to the container using its namespaced name as the `$id` will allow it to be used by the container whenever another class requires it as a dependency.
+
+**Parameters:**
+
+- `$id` (string)
+- `$object` (object)
+
+**Returns:**
+
+- (self)
+
+**Example:**
+
+```
+$some_class = new SomeClass();
+
+$container->put('SomeClass', $some_class);
+```
+
+<hr />
+
 ### set
 
 **Description:**
 
-Creates a class object using `create()`, and saves it into the container identified by `$id`. An instance of the class will be returned. 
+Creates a class instance using `create()`, and saves it into the container identified by `$id`. An instance of the class will be returned. 
 
 If another entry exists in the container with the same `$id`, it will be overwritten.
 
-Saving a class to the container using its namespaced name as the `$id` will allow it to be used by the container whenever another class requires it as a dependency.
+Saving a class instance to the container using its namespaced name as the `$id` will allow it to be used by the container whenever another class requires it as a dependency.
 
 **Parameters:**
 
@@ -167,9 +197,9 @@ try {
 
 **Description:**
 
-Creates a class object using dependency injection. An instance of the class will be returned, but not saved in the container.
+Creates a class instance using dependency injection. An instance of the class will be returned, but not saved in the container.
 
-If this namespaced class already exists in the container as an `$id`, the object existing in the container will be returned by default.
+If this namespaced class already exists in the container as an `$id`, the instance existing in the container will be returned by default.
 
 **Parameters:**
 
@@ -203,7 +233,7 @@ try {
 
 **Description:**
 
-Remove class object from the container, if existing.
+Remove class instance from the container, if existing.
 
 **Parameters:**
 
