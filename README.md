@@ -71,10 +71,10 @@ Finds and returns an entry in the container by its identifier.
 ```
 try {
 
-    $object = $container->get('Dependency');
+    $object = $container->get('ClassName');
 
 } catch (NotFoundException $e) {
-    echo $e->getMessage();
+    die($e->getMessage());
 }
 ```
 
@@ -119,7 +119,7 @@ Checks if the container can return an entry for the given identifier.
 **Example:**
 
 ```
-if ($container->has('Dependency')) {
+if ($container->has('ClassName')) {
     // Do something
 }
 ```
@@ -148,9 +148,9 @@ Saving a class instance to the container using its namespaced name as the `$id` 
 **Example:**
 
 ```
-$some_class = new SomeClass();
+$class_name = new Namespace\ClassName();
 
-$container->put('SomeClass', $some_class);
+$container->put('ClassName', $class_name);
 ```
 
 <hr />
@@ -184,10 +184,10 @@ Saving a class instance to the container using its namespaced name as the `$id` 
 ```
 try {
 
-    $object = $container->set('Dependency');
+    $class_name = $container->set('ClassName', 'Namespace\ClassName');
 
 } catch (ContainerException $e) {
-    echo $e->getMessage();
+    die($e->getMessage());
 }
 ```
 
@@ -220,10 +220,10 @@ If this namespaced class already exists in the container as an `$id`, the instan
 ```
 try {
 
-    $object = $container->create('Dependency');
+    $class_name = $container->create('Namespace\Classname');
 
 } catch (ContainerException $e) {
-    echo $e->getMessage();
+    die($e->getMessage());
 }
 ```
 
@@ -246,5 +246,5 @@ Remove class instance from the container, if existing.
 **Example:**
 
 ```
-$container->forget('Dependency');
+$container->forget('ClassName');
 ```
