@@ -154,7 +154,7 @@ class Container implements ContainerInterface
 
             } catch (NotFoundException $e) {
 
-                throw new ContainerException('Error resolving class from container: ' . $class);
+                throw new ContainerException('Error resolving class from container: ' . $class, 0, $e);
 
             }
 
@@ -170,7 +170,7 @@ class Container implements ContainerInterface
 
         } catch (ReflectionException $e) {
 
-            throw new ContainerException('Unable to locate class: ' . $class);
+            throw new ContainerException('Unable to locate class: ' . $class, 0, $e);
 
         }
 
@@ -281,7 +281,7 @@ class Container implements ContainerInterface
 
                 } catch (NotFoundException $e) {
 
-                    throw new ContainerException('Error resolving dependent class from container: ' . $dependency->name);
+                    throw new ContainerException('Error resolving dependent class from container: ' . $dependency->name, 0, $e);
 
                 }
 
@@ -293,7 +293,7 @@ class Container implements ContainerInterface
 
             } catch (ContainerException $e) {
 
-                throw new ContainerException('Unable to resolve object parameter (' . $parameter . ') for class: ' . $class);
+                throw new ContainerException('Unable to resolve object parameter (' . $parameter . ') for class: ' . $class, 0, $e);
 
             }
 
