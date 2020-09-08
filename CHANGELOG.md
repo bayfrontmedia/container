@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.1.3] - 2020.09.08
+
+### Changed
+
+- Changed return type declaration from `object` to `mixed` from `get`, `set`, and `create` methods,
+as this does not allow specific class name type hinting/return type declarations
+where these methods are used.
+
 ## [1.1.2] - 2020.08.29
 
 ### Fixed

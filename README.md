@@ -60,7 +60,7 @@ Finds and returns an entry in the container by its identifier.
 
 **Returns:**
 
-- (object)
+- (mixed)
 
 **Throws:**
 
@@ -173,7 +173,7 @@ Saving a class instance to the container using its namespaced name as the `$id` 
 
 **Returns:**
 
-- (object)
+- (mixed)
 
 **Throws:**
 
@@ -209,7 +209,7 @@ If this namespaced class already exists in the container as an `$id`, the instan
 
 **Returns:**
 
-- (object)
+- (mixed)
 
 **Throws:**
 

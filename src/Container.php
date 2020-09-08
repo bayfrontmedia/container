@@ -28,14 +28,20 @@ class Container implements ContainerInterface
     /**
      * Finds and returns an entry in the container by its identifier
      *
+     * NOTE:
+     *
+     * Removed return type "object" declaration, as this does not allow
+     * specific class name type hinting/return type declarations
+     * where this method is used.
+     *
      * @param string $id
      *
-     * @return object
+     * @return mixed
      *
      * @throws NotFoundException
      */
 
-    public function get($id): object
+    public function get($id)
     {
 
         if (!$this->has($id)) {
@@ -103,16 +109,19 @@ class Container implements ContainerInterface
      * Saving a class instance to the container using its namespaced name as the `$id` will allow it
      * to be used by the container whenever another class requires it as a dependency.
      *
+     * NOTE:
+     * See get() regarding removal of return type "object" declaration.
+     *
      * @param string $id
      * @param string $class (Fully namespaced class name)
      * @param array $params (Named parameters to pass to the class constructor)
      *
-     * @return object
+     * @return mixed
      *
      * @throws ContainerException
      */
 
-    public function set(string $id, string $class, array $params = []): object
+    public function set(string $id, string $class, array $params = [])
     {
 
         self::$instances[$id] = $this->create($class, $params);
@@ -128,18 +137,21 @@ class Container implements ContainerInterface
      * If this namespaced class already exists in the container as an $id,
      * the instance existing in the container will be returned by default.
      *
+     * NOTE:
+     * See get() regarding removal of return type "object" declaration.
+     *
      * @param string $class (Fully namespaced class name)
      * @param array $params (Named parameters to pass to the class constructor)
      * @param bool $force_unique
      *
      * (Force return a new class instance by ignoring if it already exists in the container)
      *
-     * @return object
+     * @return mixed
      *
      * @throws ContainerException
      */
 
-    public function create(string $class, array $params = [], bool $force_unique = false): object
+    public function create(string $class, array $params = [], bool $force_unique = false)
     {
 
         /*
