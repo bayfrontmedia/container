@@ -126,7 +126,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Get an entry from the container.
+     * Get an entry from the container by its ID or alias.
      *
      * @param string $id
      * @return mixed
@@ -196,7 +196,8 @@ class Container implements ContainerInterface
     /**
      * Does entry exist in the container?
      *
-     * @inheritDoc
+     * @param string $id (ID or alias)
+     * @return bool
      */
 
     public function has(string $id): bool

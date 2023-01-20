@@ -133,7 +133,7 @@ $entries = $container->getEntries();
 
 **Description:**
 
-Get an entry from the container.
+Get an entry from the container by its ID or alias.
 
 **Parameters:**
 
@@ -207,7 +207,7 @@ Does entry exist in the container?
 
 **Parameters:**
 
-- `$id` (string)
+- `$id` (string): ID or alias
 
 **Returns:**
 
