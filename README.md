@@ -1,4 +1,4 @@
-## container
+## Container
 
 An easy to use PSR-11 compatible dependency injection container.
 
@@ -21,7 +21,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## Requirements
 
-* PHP >= 7.2.0
+* PHP `^7.2.0|^8.0`
 
 ## Installation
 
@@ -41,13 +41,91 @@ $container = new Container();
 
 ### Public methods
 
-- [get](#get)
-- [getContents](#getcontents)
-- [has](#has)
-- [put](#put)
 - [set](#set)
-- [create](#create)
-- [forget](#forget)
+- [getEntries](#getentries)
+- [get](#get)
+- [resolve](#resolve)
+- [has](#has)
+- [remove](#remove)
+- [setAlias](#setalias)
+- [getAliases](#getaliases)
+- [hasAlias](#hasalias)
+- [removeAlias](#removealias)
+
+<hr />
+
+### set
+
+**Description:**
+
+Set an entry into the container.
+
+**Parameters:**
+
+- `$id` (string)
+- `$value` (mixed)
+- `$overwrite = false` (bool): If false, a `ContainerException` is thrown if an entry with the same ID already exists.
+Otherwise, it is overwritten.
+
+**Returns:**
+
+- (void)
+
+**Throws:**
+
+- `Bayfront\Container\ContainerException`
+
+**Example:**
+
+Both services and parameters can be set in the container. 
+All services (classes) must be built using an anonymous function (a `\Closure`), 
+and must return an instance of the class. 
+Any other value will be considered a parameter.
+
+The first time a service is requested from the container, 
+the anonymous function is called and the result is saved. 
+On subsequent calls, the same ID always returns the same result.
+
+The anonymous function always calls the container instance as the first argument. 
+This allows you to reference other items from the container, if needed. 
+If you do not need access to the container, the parameter may be omitted from the function signature.
+
+```php
+// Set a service with no dependencies
+
+$container->set('Fully\Namespaced\ClassName', function () {
+    return new ClassName();
+});
+
+// Set a service with dependencies
+
+$container->set('Fully\Namespaced\ClassName', function (ContainerInterface $container) {
+    $dependency = $container->get('Fully\Namespaced\Dependency');
+    return new ClassName($dependency);
+});
+```
+
+<hr />
+
+### getEntries
+
+**Description:**
+
+Returns an array of all ID's existing in the container.
+
+**Parameters:**
+
+- None.
+
+**Returns:**
+
+- (array)
+
+**Example:**
+
+```php
+$entries = $container->getEntries();
+```
 
 <hr />
 
@@ -55,7 +133,7 @@ $container = new Container();
 
 **Description:**
 
-Finds and returns an entry in the container by its identifier.
+Get an entry from the container.
 
 **Parameters:**
 
@@ -71,36 +149,52 @@ Finds and returns an entry in the container by its identifier.
 
 **Example:**
 
-```
-try {
-
-    $object = $container->get('ClassName');
-
-} catch (NotFoundException $e) {
-    die($e->getMessage());
-}
+```php
+$service = $container->get('Fully\Namespaced\ClassName');
 ```
 
 <hr />
 
-### getContents
+### resolve
 
 **Description:**
 
-Returns an array containing all the IDs which currently exist in the container.
+Resolves a class instance using dependency injection with entries which exist in the container.
 
 **Parameters:**
 
-- None
+- `$class` (string)
+- `$params = []` (array): Additional parameters to pass to the class constructor.
 
 **Returns:**
 
-- (array)
+- (object)
+
+**Throws:**
+
+- `Bayfront\Container\ContainerException`
+- `Bayfront\Container\NotFoundException`
 
 **Example:**
 
-```
-print_r($container->getContents());
+```php
+
+class ClassName {
+
+    protected $service;
+    protected $config;
+    
+    public function __construct(AnotherService $service, array $config)
+    {
+        $this->service = $service;
+        $this->config = $config;
+    }
+
+}
+
+$instance = $container->resolve('Fully\Namespaced\ClassName', [
+    'config' => []
+]);
 ```
 
 <hr />
@@ -109,7 +203,7 @@ print_r($container->getContents());
 
 **Description:**
 
-Checks if the container can return an entry for the given identifier.
+Does entry exist in the container?
 
 **Parameters:**
 
@@ -121,62 +215,52 @@ Checks if the container can return an entry for the given identifier.
 
 **Example:**
 
-```
-if ($container->has('ClassName')) {
+```php
+if ($container->has('Fully\Namespaced\ClassName')) {
     // Do something
 }
 ```
 
 <hr />
 
-### put
+### remove
 
 **Description:**
 
-Saves a preexisting class instance into the container identified by `$id`.
-
-If another entry exists in the container with the same `$id`, it will be overwritten.
-
-Saving a class instance to the container using its namespaced name as the `$id` will allow it to be used by the container whenever another class requires it as a dependency.
+Remove entry from container.
 
 **Parameters:**
 
 - `$id` (string)
-- `$object` (object)
 
 **Returns:**
 
-- (self)
+- (void)
 
 **Example:**
 
-```
-$class_name = new Namespace\ClassName();
-
-$container->put('ClassName', $class_name);
+```php
+$container->remove('Fully\Namespaced\ClassName');
 ```
 
 <hr />
 
-### set
+### setAlias
 
 **Description:**
 
-Creates a class instance using `create()`, and saves it into the container identified by `$id`. An instance of the class will be returned. 
-
-If another entry exists in the container with the same `$id`, it will be overwritten.
-
-Saving a class instance to the container using its namespaced name as the `$id` will allow it to be used by the container whenever another class requires it as a dependency.
+Set an alias for a given ID.
 
 **Parameters:**
 
+- `$alias` (string)
 - `$id` (string)
-- `$class` (string): Fully namespaced class name
-- `$params = []` (array): Named parameters to pass to the class constructor
+- `$overwrite = false` (bool): If false, a `ContainerException` is thrown if an alias with the same name already exists.
+Otherwise, it will be overwritten.
 
 **Returns:**
 
-- (mixed)
+- (void)
 
 **Throws:**
 
@@ -184,70 +268,86 @@ Saving a class instance to the container using its namespaced name as the `$id` 
 
 **Example:**
 
+```php
+$container->setAlias('alias', 'Fully\Namespaced\ClassName');
 ```
-try {
 
-    $class_name = $container->set('ClassName', 'Namespace\ClassName');
+One benefit of aliases is that they allow you to retrieve entries from the container in a concise, easy to remember manner.
+In addition, aliases allow you to bind an interface to an implementation.
 
-} catch (ContainerException $e) {
-    die($e->getMessage());
+For example:
+
+```php
+$container->setAlias('Fully\Namespaced\Implementation', 'Fully\Namespaced\Interface');
+```
+
+Now, whenever a class requires an implementation of `Fully\Namespaced\Interface`,
+an instance of `Fully\Namespaced\Implementation` will be returned, if existing in the container.
+
+<hr />
+
+### getAliases
+
+**Description:**
+
+Returns an array of all existing aliases.
+
+**Parameters:**
+
+- None.
+
+**Returns:**
+
+- (array)
+
+**Example:**
+
+```php
+$aliases = $container->getAliases();
+```
+
+<hr />
+
+### hasAlias
+
+**Description:**
+
+Does alias exist?
+
+**Parameters:**
+
+- `$alias` (string)
+
+**Returns:**
+
+- (bool)
+
+**Example:**
+
+```php
+if ($container->hasAlias('alias')) {
+    // Do something
 }
 ```
 
 <hr />
 
-### create
+### removeAlias
 
 **Description:**
 
-Creates a class instance using dependency injection. An instance of the class will be returned, but not saved in the container.
-
-If this namespaced class already exists in the container as an `$id`, the instance existing in the container will be returned by default.
+Remove alias.
 
 **Parameters:**
 
-- `$class` (string): Fully namespaced class name
-- `$params = []` (array): Named parameters to pass to the class constructor
-- `$force_unique = false` (bool): Force return a new class instance by ignoring if it already exists in the container
+- `$alias` (string)
 
 **Returns:**
 
-- (mixed)
-
-**Throws:**
-
-- `Bayfront\Container\ContainerException`
+- (void)
 
 **Example:**
 
-```
-try {
-
-    $class_name = $container->create('Namespace\Classname');
-
-} catch (ContainerException $e) {
-    die($e->getMessage());
-}
-```
-
-<hr />
-
-### forget
-
-**Description:**
-
-Remove class instance from the container, if existing.
-
-**Parameters:**
-
-- `$id` (string)
-
-**Returns:**
-
-- (bool): Returns `TRUE` if class existed in the container before being removed.
-
-**Example:**
-
-```
-$container->forget('ClassName');
+```php
+$container->removeAlias('alias');
 ```

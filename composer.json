@@ -9,8 +9,8 @@
     "container",
     "psr-11",
     "di",
-    "dependency",
-    "injection"
+    "dependency injection",
+    "alias"
   ],
   "authors": [
     {
@@ -27,8 +27,8 @@
     "preferred-install": "dist"
   },
   "require": {
-    "php": ">=7.2.0",
-    "psr/container": "^1.0.0"
+    "php": "^7.2.0|^8.0",
+    "psr/container": "^2.0"
   },
   "autoload": {
     "psr-4": {
