@@ -286,7 +286,7 @@ class Container implements ContainerInterface
 
     public function getAliases(): array
     {
-        return array_keys($this->aliases);
+        return $this->aliases;
     }
 
     /**
