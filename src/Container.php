@@ -8,7 +8,6 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 
-
 class Container implements ContainerInterface
 {
 
@@ -36,7 +35,6 @@ class Container implements ContainerInterface
             if (isset($params[$parameter->name])) {
 
                 $return[$parameter->name] = $params[$parameter->name];
-
                 continue; // Continue to the next parameter
 
             }
@@ -56,15 +54,29 @@ class Container implements ContainerInterface
 
             if (null === $dependency) { // If not a class
 
+                /*
+                 * Primitive values can be resolved from the container using their name,
+                 * but this should be avoided as names can cause conflicts.
+                 * Pass the primitive values to the constructor instead.
+                 */
+
+                /*
+                if ($this->has($parameter->name)) { // Does parameter exist in container
+
+                    $return[$parameter->name] = $this->get($parameter->name);
+                    continue;
+
+                }
+                */
+
                 if ($parameter->isDefaultValueAvailable()) { // Is a default value available
 
                     $return[$parameter->name] = $parameter->getDefaultValue();
-
                     continue; // Continue to the next parameter
 
                 }
 
-                // A value was not given for this parameter, it is not a class, and a default value was not given
+                // A value was not given for this parameter, it is not a class, does not exist in container, and a default value was not given
 
                 throw new ContainerException('Unable to resolve parameter (' . $parameter . ') for class: ' . $constructor->getDeclaringClass());
 
@@ -83,7 +95,7 @@ class Container implements ContainerInterface
 
             } else { // No instance in the container - attempt to resolve
 
-                $return[$parameter->name] = $this->resolve($dependency->name, $params);
+                $return[$parameter->name] = $this->make($dependency->name, $params);
 
             }
 
@@ -95,6 +107,7 @@ class Container implements ContainerInterface
 
     /**
      * Set an entry into the container.
+     * Anonymous functions (closures) are called on the first get().
      *
      * @param string $id
      * @param $value
@@ -126,6 +139,27 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Returns an entry by ID.
+     * ID must already be confirmed to exist via has().
+     *
+     * @param string $id
+     * @return mixed
+     */
+
+    protected function getEntry(string $id)
+    {
+
+        if (!$this->entries[$id] instanceof Closure) { // Already resolved
+            return $this->entries[$id];
+        }
+
+        $this->entries[$id] = $this->entries[$id]($this); // Resolve and save
+
+        return $this->entries[$id];
+
+    }
+
+    /**
      * Get an entry from the container by its ID or alias.
      *
      * @param string $id
@@ -139,42 +173,36 @@ class Container implements ContainerInterface
         // Check alias
 
         if ($this->hasAlias($id) && $this->has($this->aliases[$id])) {
-            return $this->get($this->aliases[$id]);
+            return $this->getEntry($this->aliases[$id]);
         }
 
         // No alias
 
-        if (!$this->has($id)) {
+        if (!isset($this->entries[$id])) {
             throw new NotFoundException('Unable to get entry: ID (' . $id . ') does not exist');
         }
 
-        if (!$this->entries[$id] instanceof Closure) { // Already resolved
-            return $this->entries[$id];
-        }
-
-        $this->entries[$id] = $this->entries[$id]($this); // Resolve and save
-
-        return $this->entries[$id];
+        return $this->getEntry($id);
 
     }
 
     /**
-     * Resolves a class instance using dependency injection for entries which exist in the container.
+     * Makes and returns a new class instance, automatically injecting dependencies which exist in the container.
      *
      * @param string $class
      * @param array $params (Additional parameters to pass to the class constructor)
-     * @return object
+     * @return mixed
      * @throws ContainerException
      * @throws NotFoundException
      */
 
-    public function resolve(string $class, array $params = []): object
+    public function make(string $class, array $params = [])
     {
 
         try {
             $reflection = new ReflectionClass($class);
         } catch (ReflectionException $e) {
-            throw new ContainerException('Unable to resolve class: class (' . $class . ') does not exist', 0, $e);
+            throw new ContainerException('Unable to make class: class (' . $class . ') does not exist', 0, $e);
         }
 
         $constructor = $reflection->getConstructor();
@@ -188,13 +216,14 @@ class Container implements ContainerInterface
         try {
             return $reflection->newInstanceArgs($dependencies);
         } catch (ReflectionException $e) {
-            throw new ContainerException('Unable to resolve class: ' . $class, 0, $e);
+            throw new ContainerException('Unable to make class: ' . $class, 0, $e);
         }
 
     }
 
     /**
-     * Does entry exist in the container?
+     * Does entry or alias exist in the container?
+     * (ie: Can an entry be resolved using get() with this ID?)
      *
      * @param string $id (ID or alias)
      * @return bool
@@ -205,7 +234,7 @@ class Container implements ContainerInterface
 
         // Check alias
 
-        if ($this->hasAlias($id) && $this->has($this->aliases[$id])) {
+        if ($this->hasAlias($id) && isset($this->aliases[$id])) {
             return true;
         }
 
@@ -213,7 +242,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Remove entry from container.
+     * Remove entry from container, if existing.
      *
      * @param string $id
      * @return void

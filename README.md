@@ -44,7 +44,7 @@ $container = new Container();
 - [set](#set)
 - [getEntries](#getentries)
 - [get](#get)
-- [resolve](#resolve)
+- [make](#make)
 - [has](#has)
 - [remove](#remove)
 - [setAlias](#setalias)
@@ -59,6 +59,8 @@ $container = new Container();
 **Description:**
 
 Set an entry into the container.
+
+Anonymous functions (closures) are called on the first `get()`.
 
 **Parameters:**
 
@@ -77,12 +79,12 @@ Otherwise, it is overwritten.
 
 **Example:**
 
-Both services and parameters can be set in the container. 
-All services (classes) must be built using an anonymous function (a `\Closure`), 
-and must return an instance of the class. 
-Any other value will be considered a parameter.
+Any type of value can be set in the container.
 
-The first time a service is requested from the container, 
+Services with dependencies can be set using an anonymous function (a `\Closure`)
+which returns an instance of the class. 
+
+The first time a service is requested from the container using `get()`, 
 the anonymous function is called and the result is saved. 
 On subsequent calls, the same ID always returns the same result.
 
@@ -103,6 +105,22 @@ $container->set('Fully\Namespaced\ClassName', function (ContainerInterface $cont
     $dependency = $container->get('Fully\Namespaced\Dependency');
     return new ClassName($dependency);
 });
+
+// Any type of value can be set, then used as a parameter
+
+$container->set('classname_config', [
+    // Config array
+]);
+
+$container->set('Fully\Namespaced\ClassName', function (ContainerInterface $container) {
+    $config = $container->get('classname_config');
+    return new ClassName($config);
+});
+
+// Preexisting class instances can be set without using an anonymous function
+
+$class = new ClassName();
+$container->set('ClassName', $class);
 ```
 
 <hr />
@@ -155,11 +173,11 @@ $service = $container->get('Fully\Namespaced\ClassName');
 
 <hr />
 
-### resolve
+### make
 
 **Description:**
 
-Resolves a class instance using dependency injection with entries which exist in the container.
+Makes and returns a new class instance, automatically injecting dependencies which exist in the container.
 
 **Parameters:**
 
@@ -168,7 +186,7 @@ Resolves a class instance using dependency injection with entries which exist in
 
 **Returns:**
 
-- (object)
+- (mixed)
 
 **Throws:**
 
@@ -192,7 +210,7 @@ class ClassName {
 
 }
 
-$instance = $container->resolve('Fully\Namespaced\ClassName', [
+$instance = $container->make('Fully\Namespaced\ClassName', [
     'config' => []
 ]);
 ```
@@ -203,7 +221,8 @@ $instance = $container->resolve('Fully\Namespaced\ClassName', [
 
 **Description:**
 
-Does entry exist in the container?
+Does entry or alias exist in the container?
+(ie: Can an entry be resolved using `get()` with this ID?)
 
 **Parameters:**
 
@@ -227,7 +246,7 @@ if ($container->has('Fully\Namespaced\ClassName')) {
 
 **Description:**
 
-Remove entry from container.
+Remove entry from container, if existing.
 
 **Parameters:**
 
