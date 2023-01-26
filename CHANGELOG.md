@@ -12,13 +12,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
-## [2.0.1] - 2022.01.21
+## [2.1.0] - 2023.01.21
+
+## Changed
+
+- Refactored code to only support PHP 8.
+
+## [2.0.1] - 2023.01.21
 
 ## Fixed
 
 - Fixed `getAliases` bug
 
-## [2.0.0] - 2022.01.21
+## [2.0.0] - 2023.01.21
 
 ## Added
 

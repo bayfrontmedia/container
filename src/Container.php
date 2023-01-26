@@ -11,8 +11,8 @@ use ReflectionMethod;
 class Container implements ContainerInterface
 {
 
-    protected $aliases = [];
-    protected $entries = [];
+    protected array $aliases = [];
+    protected array $entries = [];
 
     /**
      * Resolve dependencies.
@@ -48,7 +48,7 @@ class Container implements ContainerInterface
 
             try {
                 $dependency = $parameter->getType() && !$parameter->getType()->isBuiltin() ? new ReflectionClass($parameter->getType()->getName()) : null;
-            } catch (ReflectionException $e) {
+            } catch (ReflectionException) {
                 throw new ContainerException('Unable to determine parameter (' . $parameter . ') for class: ' . $constructor->getDeclaringClass());
             }
 
@@ -146,7 +146,7 @@ class Container implements ContainerInterface
      * @return mixed
      */
 
-    protected function getEntry(string $id)
+    protected function getEntry(string $id): mixed
     {
 
         if (!$this->entries[$id] instanceof Closure) { // Already resolved
@@ -167,7 +167,7 @@ class Container implements ContainerInterface
      * @throws NotFoundException
      */
 
-    public function get(string $id)
+    public function get(string $id): mixed
     {
 
         // Check alias
@@ -196,7 +196,7 @@ class Container implements ContainerInterface
      * @throws NotFoundException
      */
 
-    public function make(string $class, array $params = [])
+    public function make(string $class, array $params = []): mixed
     {
 
         try {
